@@ -76,31 +76,31 @@ export class Queue {
         await this.request("", { method: "PUT", body: message })
     }
 
-    private async safe_message(reference: string): Promise<string | void> {
+    private async safe_message(reference: string): Promise<string | null> {
         try {
             return (await this.request(reference)).message
         } catch (thrown) {
             if (thrown == "no_message") {
-                return
+                return null
             }
 
             throw thrown
         }
     }
 
-    async head(): Promise<string | void> {
+    async head(): Promise<string | null> {
         return await this.safe_message("/head")
     }
 
-    async tail(): Promise<string | void> {
+    async tail(): Promise<string | null> {
         return await this.safe_message("/tail")
     }
 
-    async consume(index: number): Promise<string | void> {
+    async consume(index: number): Promise<string | null> {
         return await this.safe_message(`/consume/${index}`)
     }
 
-    async peek(index: number): Promise<string | void> {
+    async peek(index: number): Promise<string | null> {
         return await this.safe_message(`/peek/${index}`)
     }
 }
