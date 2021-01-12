@@ -1,4 +1,4 @@
-interface queue_body {
+interface queue_data {
     id: string,
     name: string,
     ephemeral: boolean,
@@ -22,8 +22,28 @@ export class Queue {
         this.url = `${api}/queues/${reference}`
     }
 
-    get body(): Promise<queue_body> {
+    get data(): Promise<queue_data> {
         return ( async () => { return (await this.request("/")).queue } )()
+    }
+
+    get id(): Promise<string> {
+        return ( async () => { return (await this.data).id } )()
+    }
+
+    get name(): Promise<string> {
+        return ( async () => { return (await this.data).name } )()
+    }
+
+    get ephemeral(): Promise<boolean> {
+        return ( async () => { return (await this.data).ephemeral } )()
+    }
+
+    get capacity(): Promise<number> {
+        return ( async () => { return (await this.data).capacity } )()
+    }
+
+    get size(): Promise<number> {
+        return ( async () => { return (await this.data).size } )()
     }
 
     static async new(api: string, name?: string, capacity?: number): Promise<Queue> {
