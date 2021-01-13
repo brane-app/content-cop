@@ -108,12 +108,12 @@ export class Queue {
     }
   }
 
-  async head(): Promise<string | null> {
-    return await this.safe_message("/head");
+  get head(): Promise<string | null> {
+    return (async () => await this.safe_message("/head"))();
   }
 
-  async tail(): Promise<string | null> {
-    return await this.safe_message("/tail");
+  get tail(): Promise<string | null> {
+    return (async () => await this.safe_message("/tail"))();
   }
 
   async consume(index: number): Promise<string | null> {
