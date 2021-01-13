@@ -73,8 +73,8 @@ export class Queue {
 
   async request(path: string, opts: any = {}): Promise<any> {
     const response: Response = await fetch(`${this.url}${path}`, opts);
+    const body: any = await response.status == 204 ? {} : await response.json();
 
-    const body: any = await response.status == 200 ? await response.json() : {};
     if (400 <= response.status) {
       throw body.error;
     }
