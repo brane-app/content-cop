@@ -1,11 +1,11 @@
 import { assert, assertEquals, assertNotEquals, v4 } from "./deps.ts";
 import { Queue } from "./scyther.ts";
 
-const root: string = "http://localhost:8000";
+const host: string = Deno.env.get("SCYTHER_HOST") as string;
 const name: string = "foobar";
 
 async function delete_queue(id: string): Promise<void> {
-  await fetch(`${root}/queues/${id}`, { method: "DELETE" });
+  await fetch(`${host}/queues/${id}`, { method: "DELETE" });
 }
 
 Deno.test("imports", async () => {
@@ -13,12 +13,12 @@ Deno.test("imports", async () => {
 });
 
 Deno.test("url", async () => {
-  const url: string = (new Queue(root, name)).url;
-  assertEquals(url, `${root}/queues/${name}`);
+  const url: string = (new Queue(name)).url;
+  assertEquals(url, `${host}/queues/${name}`);
 });
 
 Deno.test("new", async () => {
-  const queue: Queue = await Queue.new(root);
+  const queue: Queue = await Queue.new();
 
   assertNotEquals(queue.url, null);
   assertNotEquals(queue.url, undefined);
@@ -29,8 +29,8 @@ Deno.test("new", async () => {
 
 Deno.test("attaches", async () => {
   const name: string = v4.generate();
-  await Queue.new(root, { name });
-  const queue: Queue = new Queue(root, name);
+  await Queue.new({ name });
+  const queue: Queue = new Queue(name);
 
   assertEquals(await queue.name, name);
 
@@ -38,7 +38,7 @@ Deno.test("attaches", async () => {
 });
 
 Deno.test("id", async () => {
-  const queue: Queue = await Queue.new(root);
+  const queue: Queue = await Queue.new();
   const id: string = await queue.id;
 
   assert(v4.validate(id));
@@ -48,7 +48,7 @@ Deno.test("id", async () => {
 
 Deno.test("name", async () => {
   const name: string = v4.generate();
-  const queue: Queue = await Queue.new(root, { name });
+  const queue: Queue = await Queue.new({ name });
 
   assertEquals(await queue.name, name);
 
@@ -56,7 +56,7 @@ Deno.test("name", async () => {
 });
 
 Deno.test("ephemeral", async () => {
-  const queue: Queue = await Queue.new(root);
+  const queue: Queue = await Queue.new();
 
   assertEquals(await queue.ephemeral, false);
 
@@ -65,8 +65,8 @@ Deno.test("ephemeral", async () => {
 
 Deno.test("capacity", async () => {
   const capacity: number = 100;
-  const queue: Queue = await Queue.new(root);
-  const queue_cap: Queue = await Queue.new(root, { capacity });
+  const queue: Queue = await Queue.new();
+  const queue_cap: Queue = await Queue.new({ capacity });
 
   assertEquals(await queue.capacity, null);
   assertEquals(await queue_cap.capacity, capacity);
@@ -76,7 +76,7 @@ Deno.test("capacity", async () => {
 });
 
 Deno.test("size", async () => {
-  const queue: Queue = await Queue.new(root);
+  const queue: Queue = await Queue.new();
 
   assertEquals(await queue.size, 0);
 
@@ -88,7 +88,7 @@ Deno.test("size", async () => {
 });
 
 Deno.test("head", async () => {
-  const queue: Queue = await Queue.new(root);
+  const queue: Queue = await Queue.new();
   const message: string = v4.generate();
   await queue.push(message);
   await queue.push(v4.generate());
@@ -100,7 +100,7 @@ Deno.test("head", async () => {
 });
 
 Deno.test("head no_message", async () => {
-  const queue: Queue = await Queue.new(root);
+  const queue: Queue = await Queue.new();
 
   await queue.head;
   assertEquals(await queue.head, null);
@@ -109,7 +109,7 @@ Deno.test("head no_message", async () => {
 });
 
 Deno.test("tail", async () => {
-  const queue: Queue = await Queue.new(root);
+  const queue: Queue = await Queue.new();
   const message: string = v4.generate();
   await queue.push(v4.generate());
   await queue.push(message);
@@ -121,7 +121,7 @@ Deno.test("tail", async () => {
 });
 
 Deno.test("tail no_message", async () => {
-  const queue: Queue = await Queue.new(root);
+  const queue: Queue = await Queue.new();
 
   assertEquals(await queue.tail, null);
 
@@ -129,7 +129,7 @@ Deno.test("tail no_message", async () => {
 });
 
 Deno.test("consume", async () => {
-  const queue: Queue = await Queue.new(root);
+  const queue: Queue = await Queue.new();
   const message: string = v4.generate();
   await queue.push(v4.generate());
   await queue.push(message);
@@ -142,23 +142,23 @@ Deno.test("consume", async () => {
 });
 
 Deno.test("consume no_message", async () => {
-  const queue: Queue = await Queue.new(root);
+  const queue: Queue = await Queue.new();
 
   assertEquals(await queue.consume(1), null);
 
   await delete_queue(await queue.id);
-})
+});
 
 Deno.test("peek", async () => {
-  const queue: Queue = await Queue.new(root)
-  const message: string = v4.generate()
-  await queue.push(v4.generate())
-  await queue.push(message)
-  await queue.push(v4.generate())
+  const queue: Queue = await Queue.new();
+  const message: string = v4.generate();
+  await queue.push(v4.generate());
+  await queue.push(message);
+  await queue.push(v4.generate());
 
-  assertEquals(await queue.peek(1), message)
-  assertEquals(await queue.peek(1), message)
-  assertNotEquals(await queue.peek(0), message)
+  assertEquals(await queue.peek(1), message);
+  assertEquals(await queue.peek(1), message);
+  assertNotEquals(await queue.peek(0), message);
 
-  await delete_queue(await queue.id)
-})
+  await delete_queue(await queue.id);
+});

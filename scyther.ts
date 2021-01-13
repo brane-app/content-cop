@@ -1,3 +1,5 @@
+const host: string = Deno.env.get("SCYTHER_HOST") as string;
+
 interface queue_data {
   id: string;
   name: string;
@@ -23,8 +25,8 @@ interface queue_message {
 export class Queue {
   url: string;
 
-  constructor(api: string, reference: string) {
-    this.url = `${api}/queues/${reference}`;
+  constructor(reference: string) {
+    this.url = `${host}/queues/${reference}`;
   }
 
   private get data(): Promise<queue_data> {
@@ -53,9 +55,9 @@ export class Queue {
     return (async () => (await this.data).size)();
   }
 
-  static async new(api: string, opts: queue_new_opts = {}): Promise<Queue> {
+  static async new(opts: queue_new_opts = {}): Promise<Queue> {
     const response: Response = await fetch(
-      `${api}/queues`,
+      `${host}/queues`,
       {
         method: "POST",
         body: JSON.stringify({ name: opts.name, capacity: opts.capacity }),
@@ -65,7 +67,7 @@ export class Queue {
     const body: queue_create = await response.json();
 
     if (response.status == 200) {
-      return new Queue(api, body.id);
+      return new Queue(body.id);
     }
 
     throw body.error;
