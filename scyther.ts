@@ -71,7 +71,7 @@ export class Queue {
     throw body.error;
   }
 
-  async request(path: string, opts: any = {}): Promise<any> {
+  private async request(path: string, opts: any = {}): Promise<any> {
     const response: Response = await fetch(`${this.url}${path}`, opts);
     const body: any = await response.status == 204 ? {} : await response.json();
 
