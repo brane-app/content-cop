@@ -6,6 +6,11 @@ interface queue_data {
   size: number;
 }
 
+interface queue_new_opts {
+  name?: string;
+  capacity?: number;
+}
+
 interface queue_create {
   id: string;
   error: string;
@@ -58,14 +63,13 @@ export class Queue {
     })();
   }
 
-  static async new(
-    api: string,
-    name?: string,
-    capacity?: number,
-  ): Promise<Queue> {
+  static async new(api: string, opts: queue_new_opts = {}): Promise<Queue> {
     const response: Response = await fetch(
       `${api}/queues`,
-      { method: "POST", body: JSON.stringify({ name, capacity }) },
+      {
+        method: "POST",
+        body: JSON.stringify({ name: opts.name, capacity: opts.capacity }),
+      },
     );
 
     const body: queue_create = await response.json();
