@@ -2,7 +2,7 @@ import { assert, assertEquals, assertNotEquals, v4 } from "./deps.ts";
 import { Queue } from "./scyther.ts";
 
 const root: string = "http://localhost:8000";
-const queue: string = "foobar";
+const name: string = "foobar";
 
 async function delete_queue(id: string): Promise<void> {
   await fetch(`${root}/queues/${id}`, { method: "DELETE" });
@@ -13,8 +13,8 @@ Deno.test("imports", async () => {
 });
 
 Deno.test("url", async () => {
-  const url: string = (new Queue(root, queue)).url;
-  assertEquals(url, `${root}/queues/${queue}`);
+  const url: string = (new Queue(root, name)).url;
+  assertEquals(url, `${root}/queues/${name}`);
 });
 
 Deno.test("new", async () => {
