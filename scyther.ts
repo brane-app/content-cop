@@ -34,33 +34,23 @@ export class Queue {
   }
 
   get id(): Promise<string> {
-    return (async () => {
-      return (await this.data).id;
-    })();
+    return (async () => (await this.data).id)();
   }
 
   get name(): Promise<string> {
-    return (async () => {
-      return (await this.data).name;
-    })();
+    return (async () => (await this.data).name)();
   }
 
   get ephemeral(): Promise<boolean> {
-    return (async () => {
-      return (await this.data).ephemeral;
-    })();
+    return (async () => (await this.data).ephemeral)();
   }
 
   get capacity(): Promise<number> {
-    return (async () => {
-      return (await this.data).capacity;
-    })();
+    return (async () => (await this.data).capacity)();
   }
 
   get size(): Promise<number> {
-    return (async () => {
-      return (await this.data).size;
-    })();
+    return (async () => (await this.data).size)();
   }
 
   static async new(api: string, opts: queue_new_opts = {}): Promise<Queue> {
