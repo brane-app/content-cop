@@ -1,4 +1,7 @@
-const host: string = Deno.env.get("SCYTHER_HOST") as string;
+const host: string = (Deno.env.get("SCYTHER_HOST") as string).replace(
+  /\/$/,
+  "",
+);
 
 interface queue_data {
   id: string;
