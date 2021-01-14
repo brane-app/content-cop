@@ -1,11 +1,11 @@
 import { assert, assertEquals, assertNotEquals, v4 } from "./deps.ts";
 import { Queue } from "./scyther.ts";
+import { SCYTHER_HOST } from "./env.ts";
 
-const host: string = Deno.env.get("SCYTHER_HOST") as string;
 const name: string = "foobar";
 
 async function delete_queue(id: string): Promise<void> {
-  await fetch(`${host}/queues/${id}`, { method: "DELETE" });
+  await fetch(`${SCYTHER_HOST}/queues/${id}`, { method: "DELETE" });
 }
 
 Deno.test("imports", async () => {
@@ -14,7 +14,7 @@ Deno.test("imports", async () => {
 
 Deno.test("url", async () => {
   const url: string = (new Queue(name)).url;
-  assertEquals(url, `${host}/queues/${name}`);
+  assertEquals(url, `${SCYTHER_HOST}/queues/${name}`);
 });
 
 Deno.test("new", async () => {

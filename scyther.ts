@@ -1,7 +1,4 @@
-const host: string = (Deno.env.get("SCYTHER_HOST") as string).replace(
-  /\/$/,
-  "",
-);
+import { SCYTHER_HOST } from "./env.ts";
 
 interface queue_data {
   id: string;
@@ -29,7 +26,7 @@ export class Queue {
   url: string;
 
   constructor(reference: string) {
-    this.url = `${host}/queues/${reference}`;
+    this.url = `${SCYTHER_HOST}/queues/${reference}`;
   }
 
   private get data(): Promise<queue_data> {
@@ -60,7 +57,7 @@ export class Queue {
 
   static async new(opts: queue_new_opts = {}): Promise<Queue> {
     const response: Response = await fetch(
-      `${host}/queues`,
+      `${SCYTHER_HOST}/queues`,
       {
         method: "POST",
         body: JSON.stringify({ name: opts.name, capacity: opts.capacity }),
