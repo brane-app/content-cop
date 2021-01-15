@@ -1,21 +1,45 @@
 import { FERRO_AUTH, FERRO_HOST } from "./env.ts";
 import { Image } from "./deps.ts";
 
-export async function get_image(id: string): Promise<Image | null> {
-  const response: Response = await fetch(`${FERRO_HOST}/${id}`);
-  if (response.status == 404) {
-    return null;
+export class Ferrothorn {
+  private static async request(id: string, opts: any = {}): Promise<Response> {
+    return await fetch(
+      `${FERRO_HOST}/${id}`,
+      {
+        headers: { "Authorization": FERRO_AUTH, ...(opts.headers || {}) },
+        ...opts,
+      },
+    );
   }
 
-  return await Image.decode(await (await response.blob()).arrayBuffer());
-}
+  static async get(id: string): Promise<Image> {
+    const response: Response = await this.request(id);
+    if (response.status == 404) {
+      response.body != null && await response.body?.cancel()
+      throw new Error("not_found");
+    }
 
-export async function post_image(id: string, image: Image): Promise<Response> {
-  const form: FormData = new FormData();
-  form.append("file", new Blob([(await image.encode(3)).buffer]), "file.png");
+    return await Image.decode(await (await response.blob()).arrayBuffer());
+  }
 
-  return await fetch(
-    `${FERRO_HOST}/${id}`,
-    { method: "POST", body: form },
-  );
+  static async delete(id: string): Promise<Response> {
+    return await this.request(id, { method: "DELETE" });
+  }
+
+  static async post(id: string, image: Image): Promise<Response> {
+    const form: FormData = new FormData();
+    form.append(
+      "file",
+      new Blob([(await image.encode(3)).buffer]),
+      "file.png",
+    );
+
+    return await this.request(
+      id,
+      {
+        method: "POST",
+        body: form,
+      },
+    );
+  }
 }
